@@ -50,9 +50,10 @@ class MFAListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: settings.DOMAIN):
         context = super().get_context_data(**kwargs)
         context['max_keys'] = settings.MAX_KEYS_PER_ACCOUNT
+        context['methods'] = settings.METHODS
         return context
 
 
@@ -114,6 +115,12 @@ class MFAAuthView(MFAFormView):
             return reverse('mfa:list')
         else:
             return success_url
+
+    def get_context_data(self, **kwargs: settings.DOMAIN):
+        context = super().get_context_data(**kwargs)
+        context['max_keys'] = settings.MAX_KEYS_PER_ACCOUNT
+        context['methods'] = settings.METHODS
+        return context
 
     @cached_property
     def user(self):

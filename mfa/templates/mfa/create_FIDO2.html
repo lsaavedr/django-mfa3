@@ -1,18 +1,30 @@
+{% extends "mfa/base.html" %}
+{% load i18n static %}
+
+{% block content_subtitle %}
+<p>
+    You will be prompted to activate the device once you click "create".
+</p>
+{% endblock %}
+
+{% block form %}
 {% load static %}
-
-<p>You will be prompted to activate the device once you click "create".</p>
-
+<script src="{% static 'cbor-js/cbor.js' %}"></script>
+<script src="{% static 'mfa/fido2.js' %}" type="module"></script>
 <form data-fido2-create="{{ mfa_data }}" method="POST">
     {% csrf_token %}
     {% for error in form.non_field_errors %}
         <p>{{ error }}</p>
     {% endfor %}
-    <label>
+    <div class="form-row">
+        {{ form.name.errors }}
         {{ form.name.label }}
         {{ form.name }}
-    </label>
+    </div>
     {{ form.code.as_hidden }}
-    <button>Create</button>
+    <div class="submit-row">
+        <input type="submit" value="{% translate 'Create' %}">
+        <input type="hidden" name="next" value="{{ next }}">
+    </div>
 </form>
-
-<script src="{% static 'mfa/fido2.js' %}" type="module"></script>
+{% endblock %}
